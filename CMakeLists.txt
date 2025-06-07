@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.16)
+project(BankProject LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+file(GLOB SRC CONFIGURE_DEPENDS src/*.cpp)
+add_executable(bank_app ${SRC})

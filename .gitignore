@@ -1,0 +1,20 @@
+# сама программа
+!src/
+!data/
+
+# игнорируем всё, что собралось
+build/
+build_*/
+*.exe
+*.o
+*.obj
+# CMake/Ninja промежуточные
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+.ninja_deps
+.ninja_log
+# VS Code / CLion
+.vscode/
+.idea/
