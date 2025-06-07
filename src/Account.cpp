@@ -2,17 +2,25 @@
 #include <sstream>
 #include <vector>
 
+// Разбивает строку на части по заданному символу
+// По умолчанию символ — точка с запятой
+// Используется для чтения строк из CSV
 static std::vector<std::string> split(const std::string& s, char delim=';')
 {
-    std::vector<std::string> out; std::string part; std::stringstream ss(s);
-    while(std::getline(ss, part, delim)) out.push_back(part);
+    std::vector<std::string> out;
+    std::string part;
+    std::stringstream ss(s);
+    while(std::getline(ss, part, delim)) 
+        out.push_back(part);
     return out;
 }
 
+// Создаёт объект Account из строки CSV
 Account Account::fromCSV(const std::string& line)
 {
     auto v = split(line);
-    if(v.size() != 6) throw std::runtime_error("Bad CSV line: "+line);
+    if(v.size() != 6) 
+        throw std::runtime_error("Bad CSV line: "+line);
 
     Account a;
     a.id      = v[0];
@@ -24,6 +32,7 @@ Account Account::fromCSV(const std::string& line)
     return a;
 }
 
+// Преобразует объект Account в строку CSV
 std::string Account::toCSV() const
 {
     std::ostringstream os;

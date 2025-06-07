@@ -4,33 +4,53 @@
 #include "Account.hpp"
 #include "CDate.hpp"
 
-/*--------------------------------------------------------------
- *  BankDB — простая «база» вектором Account
- *-------------------------------------------------------------*/
+// Класс BankDB — это простая база данных банковских счетов
+// Счета хранятся в векторе
+// Также запоминается имя последнего открытого файла
+
 class BankDB
 {
-    std::vector<Account> data_;                 // все записи
-    std::string currentFile_;          // ← хранит последний открытый CSV
+    // список всех записей (счётов)
+    std::vector<Account> data_;
 
-    static void printHeader();                  // ↓ вспомогательный вывод
+    // путь к текущему открытому CSV-файлу
+    std::string currentFile_;
+
+    // Вспомогательные функции для вывода таблицы
+    static void printHeader();
     static void printRec(const Account&);
 
 public:
-    /* Этап 3: CSV I/O */
-    void load(const std::string& path);         // чтение CSV
-    void save(const std::string& path) const;   // запись CSV
-    void save() const;                          // NEW: перезаписать currentFile_
-    void show() const;                          // вывести таблицу
+    // загрузить из файла
+    void load(const std::string& path);
 
-    /* Этап 4: базовые операции */
-    void add();                                 // добавить счёт
-    void remove(std::size_t oneBasedIdx);       // удалить (номера с 1)
-    void sortById();                            // сортировка по id
-    Account* findById(const std::string& id);   // поиск
-    void rangeByOpenDate(const CDate& from,
-                         const CDate& to) const; // фильтр
+    // сохранить в файл
+    void save(const std::string& path) const;
 
-    /* Этап 5: мои задачи из варианта 11 */
+    // сохранить в тот же файл
+    void save() const;
+
+    // вывести все записи на экран
+    void show() const;
+
+    // добавить новую запись
+    void add();
+
+    // удалить по номеру (начиная с 1)
+    void remove(std::size_t oneBasedIdx);
+
+    // отсортировать по ID
+    void sortById();
+
+    // найти по ID
+    Account* findById(const std::string& id);
+
+    // выбрать по диапазону дат
+    void rangeByOpenDate(const CDate& from, const CDate& to) const;
+
+    // найти счета старше 1 года
     void taskProlongation(const CDate& today) const;
+
+    // прогноз баланса на N месяцев
     void taskForecast(int months, const std::string& outFile) const;
 };

@@ -4,23 +4,23 @@
 #include <stdexcept>
 #include <ctime> 
 
-/* ---------- parse ---------- */
-
+// Преобразует строку "YYYY-MM-DD" в CDate
 CDate CDate::parse(const std::string& iso)
 {
     unsigned yy, mm, dd;
     char dash1, dash2;
     std::istringstream ss(iso);
 
+    // Проверяем, что строка состоит из года, месяца и дня, разделённых дефисами
     if (!(ss >> yy >> dash1 >> mm >> dash2 >> dd) || dash1 != '-' || dash2 != '-') {
         throw std::runtime_error("bad date format: " + iso);
     }
 
-    // 1. Проверка месяца
+    // Проверяем, что месяц в пределах от 1 до 12
     if (mm < 1 || mm > 12)
         throw std::runtime_error("bad month in date: " + iso);
 
-    // 2. Получаем количество дней в месяце (с учётом високосного года)
+    // Проверяем число в зависимости от месяца и високосности года
     auto isLeap = [](unsigned y) {
         return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
     };
@@ -33,7 +33,7 @@ CDate CDate::parse(const std::string& iso)
     if (dd < 1 || dd > daysInMonth[mm - 1])
         throw std::runtime_error("bad day in date: " + iso);
 
-    // 3. Получаем текущий год
+    // Не разрешаем ввод будущего года
     std::time_t t = std::time(nullptr);
     std::tm* now = std::localtime(&t);
     unsigned currentYear = 1900 + now->tm_year;
@@ -44,7 +44,7 @@ CDate CDate::parse(const std::string& iso)
     return {yy, mm, dd};
 }
 
-/* ---------- str ---------- */
+// Преобразует дату в строку "YYYY-MM-DD"
 std::string CDate::str() const
 {
     std::ostringstream ss;
@@ -55,16 +55,29 @@ std::string CDate::str() const
     return ss.str();
 }
 
-/* ---------- stream operators ---------- */
+// Вывод даты в поток (std::cout << date)
 std::ostream& operator<<(std::ostream& os, const CDate& d)
 {
     return os << d.str();
 }
 
+// Считывание даты из потока (std::cin >> date)
 std::istream& operator>>(std::istream& is, CDate& d)
 {
     std::string tmp;
     if (is >> tmp)
         d = CDate::parse(tmp);
     return is;
+}
+
+// Возвращает текущую дату с компьютера
+CDate CDate::today()
+{
+    std::time_t t = std::time(nullptr);
+    std::tm* now = std::localtime(&t);
+    return {
+        static_cast<unsigned short>(now->tm_year + 1900),
+        static_cast<unsigned short>(now->tm_mon + 1),
+        static_cast<unsigned short>(now->tm_mday)
+    };
 }

@@ -1,27 +1,23 @@
 #pragma once
-/*───────────────────────────────────────────────────────────────────
- *  CDate ‒ минимальная календарная дата (год-месяц-день)
- *   • сравнение и вычитание через std::chrono::sys_days
- *   • parse()  — из строки "YYYY-MM-DD"
- *   • str()    — обратно в строку
- *   • потоковые операторы << и >>
- *   • constexpr где это возможно
- *──────────────────────────────────────────────────────────────────*/
-#include <chrono>    // year_month_day, sys_days
-#include <compare>   // <=>   (C++20)
+#include <chrono>
+#include <compare>
 #include <string>
-#include <iosfwd>    // объявление ostream/istream
+#include <iosfwd>
+
+// Класс даты: год, месяц, день
+// Используется для сравнения, вычитания и преобразования в строку
 
 struct CDate
 {
-    unsigned y{}, m{}, d{};                      // например 2025-06-07
+    // Год, месяц, день
+    unsigned y{}, m{}, d{};
 
     constexpr CDate() = default;
     constexpr CDate(unsigned yy, unsigned mm, unsigned dd)
         : y(yy), m(mm), d(dd) {}
 
 private:
-    /* helper: переводим в chrono-дату для всех операций */
+    // Вспомогательная функция: преобразует дату в chrono-формат
     std::chrono::sys_days toChrono() const
     {
         using namespace std::chrono;
@@ -29,25 +25,29 @@ private:
     }
 
 public:
-    /* ---------- сравнение (operator<=> генерирует всё остальное) ---------- */
+    // Сравнение дат (<, >, == и т.д.)
     constexpr auto operator<=>(const CDate& rhs) const
     { return toChrono() <=> rhs.toChrono(); }
 
     constexpr bool operator==(const CDate&) const = default;
 
-    /* ---------- разница дней ---------- */
+    // Разница между датами в днях
     long operator-(const CDate& rhs) const
     {
         using namespace std::chrono;
         return (toChrono() - rhs.toChrono()).count();   // days.count()
     }
 
-    /* ---------- строковый ввод/вывод ---------- */
-    static CDate   parse(const std::string& iso);  // "YYYY-MM-DD"
-    std::string    str() const;                    // → строка
+    // Строка → дата (формат "YYYY-MM-DD")
+    static CDate parse(const std::string& iso);
 
+    // Дата → строка
+    std::string str() const;
+
+    // Текущая системная дата
+    static CDate today();
 };
 
-/* потоковые операторы (реализованы в .cpp) */
+// Поддержка std::cout << date и std::cin >> date
 std::ostream& operator<<(std::ostream&, const CDate&);
 std::istream& operator>>(std::istream&, CDate&);
